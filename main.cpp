@@ -1,5 +1,6 @@
+
 #ifdef APPLE
-#include <GLUT/glut.h>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -105,7 +106,7 @@ void printSome(const char *str, int x, int y) {
     glColor3f(1, 1, 1);
     glRasterPos2d(x, y);
     for (int i = 0; i < strlen(str); i++)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
     glFlush();
 }
 
@@ -144,40 +145,197 @@ void drawPatternBackground() {
     }
 }
 
-void Display() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    drawPatternBackground();
-    DrawColoredCircle(50, 75, 15, 1500);
-    scoreTime();
-    glutSwapBuffers();
-    glFlush();
-}
+
 
 void Timer(int value) {
+
     elapsedTime += 0.1f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
     glutPostRedisplay(); // Request a redraw
     glutTimerFunc(timerInterval, Timer, 0); // Register the timer callback again
 }
+void drawRedArrow(float x, float y, float width , float height ) {
+    // Draw the shaft
+    glColor3f(1.0f, 0.0f, 0.0f); // Red color
+    glBegin(GL_QUADS);
+    glVertex2f(x, y - height / 4);
+    glVertex2f(x, y + height / 4);
+    glVertex2f(x + width - height / 2, y + height / 4);
+    glVertex2f(x + width - height / 2, y - height / 4);
+    glEnd();
+
+    // Draw the head
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width - height / 2, y - height / 2);
+    glVertex2f(x + width - height / 2, y + height / 2);
+    glEnd();
+
+    // Draw the stroke
+    glColor3f(0.0f, 0.0f, 0.0f); // Black color
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y - height / 4);
+    glVertex2f(x, y + height / 4);
+    glVertex2f(x + width - height / 2, y + height / 4);
+    glVertex2f(x + width - height / 2, y - height / 4);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width - height / 2, y - height / 2);
+    glVertex2f(x + width - height / 2, y + height / 2);
+    glEnd();
+}
+
+void drawYellowArrow(float x, float y, float width , float height ) {
+    // Draw the shaft
+    glColor3f(1.0f, 1.0f, 0.0f); // Yellow color
+    glBegin(GL_QUADS);
+    glVertex2f(x + height / 2, y - height / 4);
+    glVertex2f(x + height / 2, y + height / 4);
+    glVertex2f(x + width, y + height / 4);
+    glVertex2f(x + width, y - height / 4);
+    glEnd();
+
+    // Draw the head
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x, y);
+    glVertex2f(x + height / 2, y - height / 2);
+    glVertex2f(x + height / 2, y + height / 2);
+    glEnd();
+
+    // Draw the stroke
+    glColor3f(0.0f, 0.0f, 0.0f); // Black color
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x + height / 2, y - height / 4);
+    glVertex2f(x + height / 2, y + height / 4);
+    glVertex2f(x + width, y + height / 4);
+    glVertex2f(x + width, y - height / 4);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + height / 2, y - height / 2);
+    glVertex2f(x + height / 2, y + height / 2);
+    glEnd();
+}
+
+
+void drawBlueArrow(float x, float y, float width, float height) {
+    // Draw the shaft
+    glColor3f(0.0f, 0.0f, 1.0f); // Blue color
+    glBegin(GL_QUADS);
+    glVertex2f(x - width / 4, y + height / 2);
+    glVertex2f(x + width / 4, y + height / 2);
+    glVertex2f(x + width / 4, y - height / 4);
+    glVertex2f(x - width / 4, y - height / 4);
+    glEnd();
+
+    // Draw the head
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x, y - height / 2); // Bottom point of the arrowhead
+    glVertex2f(x - width / 2, y); // Left point of the arrowhead
+    glVertex2f(x + width / 2, y); // Right point of the arrowhead
+    glEnd();
+
+    // Draw the stroke
+    glColor3f(0.0f, 0.0f, 0.0f); // Black color
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x - width / 4, y + height / 2);
+    glVertex2f(x + width / 4, y + height / 2);
+    glVertex2f(x + width / 4, y - height / 100);
+    glVertex2f(x - width / 4, y - height / 100);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y - height / 2);
+    glVertex2f(x - width / 2, y);
+    glVertex2f(x + width / 2, y);
+    glEnd();
+}
+
+void drawGreenArrow(float x, float y, float width, float height ) {
+    // Draw the shaft
+    glColor3f(0.0f, 1.0f, 0.0f); // Green color
+    glBegin(GL_QUADS);
+    glVertex2f(x - width / 4, y);
+    glVertex2f(x + width / 4, y);
+    glVertex2f(x + width / 4, y + height - width / 2);
+    glVertex2f(x - width / 4, y + height - width / 2);
+    glEnd();
+
+    // Draw the head
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x, y + height);
+    glVertex2f(x - width / 2, y + height - width / 2);
+    glVertex2f(x + width / 2, y + height - width / 2);
+    glEnd();
+
+    // Draw the stroke
+    glColor3f(0.0f, 0.0f, 0.0f); // Black color
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x - width / 4, y);
+    glVertex2f(x + width / 4, y);
+    glVertex2f(x + width / 4, y + height - width / 2);
+    glVertex2f(x - width / 4, y + height - width / 2);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y + height);
+    glVertex2f(x - width / 2, y + height - width / 2);
+    glVertex2f(x + width / 2, y + height - width / 2);
+    glEnd();
+}
+
+
+
 
 void incrementScore() {
     score += 1; // Increment the score by 1
     glutPostRedisplay(); // Request a redraw to update the display
 }
 
+void startGame(){
+    drawPatternBackground();
+    DrawColoredCircle(50, 75, 15, 1500);
+    scoreTime();
+}
+void handleKeypress(int key, int x, int y) {
+    if (key == GLUT_KEY_UP) {
+        incrementScore();
+    }
+
+    if (key == GLUT_KEY_DOWN) {
+        incrementScore();
+    }
+
+    if (key == GLUT_KEY_LEFT) {
+        incrementScore();
+    }
+
+    if (key == GLUT_KEY_RIGHT) {
+        incrementScore();
+    }
+}
+void Display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    startGame();
+    glutSwapBuffers();
+    glFlush();
+}
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(phyWidth, phyHeight);
-    glutCreateWindow("phase 1");
+    glutCreateWindow("Arrow Hero");
     init2D();
     glutDisplayFunc(Display);
-    glutTimerFunc(timerInterval, Timer, 0); // Initialize the timer
-
-    // Example of calling incrementScore (could be triggered by an event)
-    // For demonstration, we'll call it after a short delay
-    glutTimerFunc(5000, [](int value) { incrementScore(); }, 0); // Increment score after 5 seconds
-
+    glutTimerFunc(timerInterval, Timer, 0);
+    glutSpecialFunc(handleKeypress);
     glutMainLoop();
     return 0;
 }
