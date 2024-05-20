@@ -17,7 +17,12 @@ int centerX = logWidth / 2;
 int centerY = logHeight / 2;
 int score = 0;
 float elapsedTime = 0.0f;
-int timerInterval = 100; // 100 milliseconds
+int timerInterval = 10; // 10 milliseconds
+float arrowX = 50;
+float arrowY= 5;
+float targetY = 75;
+bool arrowActive = true;
+int arrowColor =0;
 
 void init2D() {
     glClearColor(0.2, 0.2, 0.2, 1);
@@ -149,7 +154,14 @@ void drawPatternBackground() {
 
 void Timer(int value) {
 
-    elapsedTime += 0.1f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
+    elapsedTime += 0.01f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
+    if(arrowActive){
+        arrowY += 1.0f;
+        if(arrowY >= targetY){
+            arrowActive = false;
+            arrowColor = rand() % 4;
+        }
+    }
     glutPostRedisplay(); // Request a redraw
     glutTimerFunc(timerInterval, Timer, 0); // Register the timer callback again
 }
@@ -172,7 +184,7 @@ void drawRedArrow(float x, float y, float width , float height ) {
 
     // Draw the stroke
     glColor3f(0.0f, 0.0f, 0.0f); // Black color
-    glLineWidth(2.0f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(x, y - height / 4);
     glVertex2f(x, y + height / 4);
@@ -206,7 +218,7 @@ void drawYellowArrow(float x, float y, float width , float height ) {
 
     // Draw the stroke
     glColor3f(0.0f, 0.0f, 0.0f); // Black color
-    glLineWidth(2.0f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(x + height / 2, y - height / 4);
     glVertex2f(x + height / 2, y + height / 4);
@@ -241,7 +253,7 @@ void drawBlueArrow(float x, float y, float width, float height) {
 
     // Draw the stroke
     glColor3f(0.0f, 0.0f, 0.0f); // Black color
-    glLineWidth(2.0f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(x - width / 4, y + height / 2);
     glVertex2f(x + width / 4, y + height / 2);
@@ -275,7 +287,7 @@ void drawGreenArrow(float x, float y, float width, float height ) {
 
     // Draw the stroke
     glColor3f(0.0f, 0.0f, 0.0f); // Black color
-    glLineWidth(2.0f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(x - width / 4, y);
     glVertex2f(x + width / 4, y);
@@ -304,25 +316,55 @@ void startGame(){
     scoreTime();
 }
 void handleKeypress(int key, int x, int y) {
-    if (key == GLUT_KEY_UP) {
+    //right move
+    if (key == GLUT_KEY_UP && arrowColor ==3 && arrowY>=50) {
         incrementScore();
+        arrowActive = false;
+        arrowColor = rand() % 4;
+        return;
     }
 
-    if (key == GLUT_KEY_DOWN) {
+    else if (key == GLUT_KEY_DOWN && arrowColor ==1 && arrowY>=50) {
         incrementScore();
+        arrowActive = false;
+        arrowColor = rand() % 4;
+        return;
     }
 
-    if (key == GLUT_KEY_LEFT) {
+    else if (key == GLUT_KEY_LEFT && arrowColor ==2 && arrowY>=50) {
         incrementScore();
+        arrowActive = false;
+        arrowColor = rand() % 4;
+        return;
     }
 
-    if (key == GLUT_KEY_RIGHT) {
+    else if (key == GLUT_KEY_RIGHT && arrowColor ==0 && arrowY>=45) {
         incrementScore();
+        arrowActive = false;
+        arrowColor = rand() % 4;
+        return;
+    }else{
+        score = 9999;
     }
 }
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT);
     startGame();
+    if(arrowActive){
+        if(arrowColor == 0){
+            drawRedArrow(45,arrowY,15,15);
+        }else if(arrowColor == 1){
+            drawBlueArrow(50,arrowY,15,15);
+        }else if(arrowColor == 2){
+            drawYellowArrow(43,arrowY,15,15);
+        }else{
+            drawGreenArrow(50,arrowY,15,15);
+        }
+    }else{
+        arrowActive = true;
+         arrowX = 50;
+         arrowY= 5;
+    }
     glutSwapBuffers();
     glFlush();
 }
