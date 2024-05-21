@@ -32,10 +32,12 @@ float targetRed = 0.0f, targetGreen = 1.0f, targetBlue = 0.0f;
 float currentWidth = 0;
 float targetWidth = 0;
 bool gameEndFlag = false;
-bool gameStartAgainFlag = false;
+bool gameStartedFlag = false;
+int selectedMenuItem = -1; //1-> easy 2->hard 3->exit
 
-
-
+void setMenuItem(int value){
+    selectedMenuItem = value;
+}
 
 void init2D() {
     glClearColor(0.2, 0.2, 0.2, 1);
@@ -168,7 +170,6 @@ void drawPatternBackground() {
 
 
 void Timer(int value) {
-
     elapsedTime += 0.01f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
     if(arrowActive){
         arrowY += speed;
@@ -370,8 +371,8 @@ void keyboard(unsigned char key, int x, int y) {
         elapsedTime = 0.0;
         lives = 3;
         gameEndFlag = false;
-        gameStartAgainFlag = true;
         speed = 0.8f;
+         arrowY= 5;
         glutPostRedisplay(); // Request a redraw
     }
 }
@@ -391,6 +392,42 @@ void drawEndScreen(){
     glEnd();
     printSome("GAME OVER !",40,50);
     printSome("PRESS ENTER TO PLAY AGAIN",30,45);
+}
+void drawMenuScreen(){
+    drawPatternBackground();
+    printSome("EASY",45,85);
+    printSome("Hard",45,75);
+    printSome("Exit",45,65);
+}
+void mouse(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && !gameStartedFlag) {
+        // Convert window coordinates to OpenGL coordinates
+        int windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+        float glX = (float)x / (glutGet(GLUT_WINDOW_WIDTH) / 100.0);
+        float glY = 100.0 - ((float)y / (windowHeight / 100.0));
+
+        // Check if the click was within the bounds of the menu items
+        if (glX >= 45 && glX <= 55) {
+            if (glY >= 80 && glY <= 90) {
+                selectedMenuItem = 1; // EASY
+                speedFactor = 0.0005f;
+                gameStartedFlag = true;
+                arrowY = 5;
+                lives = 3;
+            } else if (glY >= 70 && glY <= 80) {
+                selectedMenuItem = 2; // Hard
+                speedFactor = 0.0008f;
+                gameStartedFlag = true;
+                arrowY = 5;
+                lives = 3;
+            } else if (glY >= 60 && glY <= 70) {
+                selectedMenuItem = 3; // Exit
+                printf("Exit selected\n");
+                exit(0); // Exit the program
+            }
+        }
+        glutPostRedisplay();
+    }
 }
 void drawLivesLine(){
     switch (lives) {
@@ -427,6 +464,12 @@ void drawLivesLine(){
 
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT);
+    if(!gameStartedFlag){
+        drawMenuScreen();
+        glutSwapBuffers();
+        glFlush();
+        return;
+    }
     startGame();
     if(arrowActive){
         if(arrowColor == 0){
@@ -459,6 +502,7 @@ int main(int argc, char *argv[]) {
     glutTimerFunc(timerInterval, Timer, 0);
     glutSpecialFunc(handleKeypress);
     glutKeyboardFunc(keyboard);
+    glutMouseFunc(mouse);
     glutMainLoop();
     return 0;
 }

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1716293156 source:c:\users\karim\desktop\glut\arrowhero\main.cpp
+1716301777 source:c:\users\karim\desktop\glut\arrowhero\main.cpp
 	<GL/glut.h>
 	<cstring>
 	<stdlib.h>
