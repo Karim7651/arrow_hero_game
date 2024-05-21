@@ -21,8 +21,10 @@ int timerInterval = 10; // 10 milliseconds
 float arrowX = 50;
 float arrowY= 5;
 float targetY = 75;
+float speed = 0.8f;
 bool arrowActive = true;
 int arrowColor =0;
+int lives = 3;
 
 void init2D() {
     glClearColor(0.2, 0.2, 0.2, 1);
@@ -117,7 +119,7 @@ void printSome(const char *str, int x, int y) {
 
 void scoreTime() {
     char scoreStr[50];
-    sprintf(scoreStr, "Score %d", score); // Convert and concatenate the score
+    sprintf(scoreStr, "Score: %d", score); // Convert and concatenate the score
     printSome(scoreStr, 2, 95);
 
     char timeStr[50];
@@ -156,7 +158,8 @@ void Timer(int value) {
 
     elapsedTime += 0.01f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
     if(arrowActive){
-        arrowY += 1.0f;
+        arrowY += speed;
+        speed += 0.00025;
         if(arrowY >= targetY){
             arrowActive = false;
             arrowColor = rand() % 4;
@@ -338,13 +341,15 @@ void handleKeypress(int key, int x, int y) {
         return;
     }
 
-    else if (key == GLUT_KEY_RIGHT && arrowColor ==0 && arrowY>=45) {
+    else if (key == GLUT_KEY_RIGHT && arrowColor ==0 && arrowY>=40) {
         incrementScore();
         arrowActive = false;
         arrowColor = rand() % 4;
         return;
+    //wrong move
     }else{
-        score = 9999;
+        arrowActive = false;
+        arrowColor = rand() % 4;
     }
 }
 void Display() {
