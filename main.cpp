@@ -175,6 +175,7 @@ void Timer(int value) {
         speed += speedFactor;
         if(arrowY >= targetY){
             arrowActive = false;
+            lives--;
             arrowColor = rand() % 4;
         }
     }
