@@ -24,13 +24,25 @@ float targetY = 75;
 float speed = 0.8f;
 bool arrowActive = true;
 int arrowColor =0;
+float speedFactor = 0.0005f;
+
 int lives = 3;
+float currentRed = 0.0f, currentGreen = 1.0f, currentBlue = 0.0f;
+float targetRed = 0.0f, targetGreen = 1.0f, targetBlue = 0.0f;
+float currentWidth = 0;
+float targetWidth = 0;
+bool gameEndFlag = false;
+bool gameStartAgainFlag = false;
+
+
+
 
 void init2D() {
     glClearColor(0.2, 0.2, 0.2, 1);
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.0, logWidth, 0.0, logHeight);
 }
+
 
 void DrawColoredCircle(float cx, float cy, float r, int num_segments) {
     glLineWidth(5.0f);
@@ -117,6 +129,7 @@ void printSome(const char *str, int x, int y) {
     glFlush();
 }
 
+
 void scoreTime() {
     char scoreStr[50];
     sprintf(scoreStr, "Score: %d", score); // Convert and concatenate the score
@@ -159,7 +172,7 @@ void Timer(int value) {
     elapsedTime += 0.01f; // Increment elapsed time by 0.1 seconds (100 milliseconds)
     if(arrowActive){
         arrowY += speed;
-        speed += 0.00025;
+        speed += speedFactor;
         if(arrowY >= targetY){
             arrowActive = false;
             arrowColor = rand() % 4;
@@ -324,21 +337,18 @@ void handleKeypress(int key, int x, int y) {
         incrementScore();
         arrowActive = false;
         arrowColor = rand() % 4;
-        return;
     }
 
     else if (key == GLUT_KEY_DOWN && arrowColor ==1 && arrowY>=50) {
         incrementScore();
         arrowActive = false;
         arrowColor = rand() % 4;
-        return;
     }
 
     else if (key == GLUT_KEY_LEFT && arrowColor ==2 && arrowY>=50) {
         incrementScore();
         arrowActive = false;
         arrowColor = rand() % 4;
-        return;
     }
 
     else if (key == GLUT_KEY_RIGHT && arrowColor ==0 && arrowY>=40) {
@@ -350,8 +360,70 @@ void handleKeypress(int key, int x, int y) {
     }else{
         arrowActive = false;
         arrowColor = rand() % 4;
+        lives -=1;
     }
 }
+void keyboard(unsigned char key, int x, int y) {
+    if (key == 13 && gameEndFlag) {
+        score = 0;
+        elapsedTime = 0.0;
+        lives = 3;
+        gameEndFlag = false;
+        gameStartAgainFlag = true;
+        speed = 0.8f;
+        glutPostRedisplay(); // Request a redraw
+    }
+}
+
+void drawEndScreen(){
+    //rgb(50, 34, 155)
+    float r = 50.0f / 255.0f;
+    float g = 34.0f / 255.0f;
+    float b = 155.0f / 255.0f;
+
+    glColor3f(r, g, b);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(100, 0);
+    glVertex2f(100, 100);
+    glVertex2f(0, 100);
+    glEnd();
+    printSome("GAME OVER !",40,50);
+    printSome("PRESS ENTER TO PLAY AGAIN",30,45);
+}
+void drawLivesLine(){
+    switch (lives) {
+        case 3:
+            glLineWidth(15.0f);
+                glBegin(GL_LINES);
+                glColor3f(0, 1.0, 0);
+                glVertex2i(0, 0);
+                glVertex2i(100, 0);
+            glEnd();
+            break;
+        case 2:
+            glLineWidth(15.0f);
+                glBegin(GL_LINES);
+                glColor3f(1.0, 0.5, 0);
+                glVertex2i(25, 0);
+                glVertex2i(75, 0);
+            glEnd();
+            break;
+        case 1:
+            glLineWidth(15.0f);
+                glBegin(GL_LINES);
+                glColor3f(1.0, 0, 0);
+                glVertex2i(37.5, 0);
+                glVertex2i(62.5, 0);
+            glEnd();
+            break;
+        default:
+            gameEndFlag = true;
+            drawEndScreen();
+            break;
+    }
+}
+
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT);
     startGame();
@@ -370,9 +442,11 @@ void Display() {
          arrowX = 50;
          arrowY= 5;
     }
+    drawLivesLine();
     glutSwapBuffers();
     glFlush();
 }
+
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -383,6 +457,7 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(Display);
     glutTimerFunc(timerInterval, Timer, 0);
     glutSpecialFunc(handleKeypress);
+    glutKeyboardFunc(keyboard);
     glutMainLoop();
     return 0;
 }
